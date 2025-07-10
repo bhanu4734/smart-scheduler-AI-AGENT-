@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Scheduler</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📅 Smart Scheduler</h1>
+
+    <textarea id="inputText" placeholder="Type your event here..."></textarea>
+
+    <label>Duration (minutes):</label>
+    <input type="number" id="duration" value="60" min="15" max="480" />
+
+    <label>Reminder before event (minutes):</label>
+    <input type="number" id="reminder" value="10" min="0" max="120" />
+
+    <button onclick="scheduleEvent()">Schedule</button>
+    <div id="result"></div>
+
+    <h2>📆 Upcoming Events</h2>
+    <ul id="calendarList"></ul>
+  </div>
+
+  <script>
+    async function scheduleEvent() {
+      const userInput = document.getElementById("inputText").value;
+      const duration = document.getElementById("duration").value;
+      const reminder = document.getElementById("reminder").value;
+
+      const response = await fetch("/schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: userInput, duration, reminder })
+      });
+
+      const data = await response.json();
+      const resultDiv = document.getElementById("result");
+
+      if (data.message) {
+        resultDiv.innerHTML = `<p style="color:green;">${data.message}</p>`;
+        loadCalendar();
+      } else {
+        resultDiv.innerHTML = `<p style="color:red;">${data.error}</p>`;
+      }
+    }
+
+    async function loadCalendar() {
+      const res = await fetch("/events");
+      const events = await res.json();
+      const list = document.getElementById("calendarList");
+      list.innerHTML = "";
+
+      events.forEach(event => {
+        const li = document.createElement("li");
+        const time = event.start.dateTime || event.start.date;
+        li.textContent = `${event.summary} — ${new Date(time).toLocaleString()}`;
+        list.appendChild(li);
+      });
+    }
+
+    window.onload = loadCalendar;
+  </script>
+</body>
+</html>
