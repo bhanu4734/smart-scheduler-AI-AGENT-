@@ -111,3 +111,13 @@ Returns the next 10 upcoming Google Calendar events in JSON format.
 1.DO NOT share your OpenAI API key publicly.
 
 2.Keep your credentials.json file safe and out of version control (.gitignore it).
+
+**✨ Future Enhancements**
+
+1.Add front-end input form (HTML/JS)
+
+2.Add event editing & deletion
+
+3.Add support for recurring events
+
+4.Multi-user calendar support
